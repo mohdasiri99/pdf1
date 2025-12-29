@@ -32,48 +32,104 @@
 
         /* --- تنسيقات الطباعة المتقدمة (PDF) --- */
         @media print {
-            /* إعدادات الصفحة: إلغاء الهوامش تماماً */
+            /* إعدادات الصفحة */
             @page {
                 size: A4;
-                margin: 0;
+                margin: 1cm; /* هامش صغير لضمان عدم القص من الطابعة */
             }
             
             body {
-                margin: 0;
-                padding: 0;
                 background-color: white;
+                font-size: 12pt; /* حجم خط مناسب للقراءة */
             }
 
-            /* إخفاء عناصر التحكم والشاشة */
+            /* إخفاء عناصر التحكم */
             .no-print { display: none !important; }
-            
-            /* إظهار عناصر الطباعة المخفية */
             .print-only { display: block !important; }
-            
-            /* تحسين فواصل الصفحات */
-            .page-break { 
-                break-before: page; 
-                page-break-before: always; 
-                margin-top: 0;
-            }
 
-            /* البطاقة الرئيسية في الطباعة لا تحتاج ظل */
+            /* --- إصلاح الفهرس (البطاقات الرئيسية) --- */
+            #cards-wrapper {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important; /* 3 أعمدة في الصف */
+                gap: 1rem !important;
+                margin-bottom: 2rem !important;
+            }
+            
+            /* تصغير البطاقة في الفهرس */
             .card-container {
                 box-shadow: none !important;
-                border: 1px solid #eee !important;
-                break-inside: avoid;
-                margin: 2cm; /* هوامش داخلية للبطاقات في الفهرس فقط */
+                border: 1px solid #ccc !important;
+                break-inside: avoid !important; /* ممنوع قص البطاقة */
+                page-break-inside: avoid !important;
+                margin: 0 !important;
+                padding: 0.5rem !important;
+                min-height: auto !important;
+            }
+            
+            /* إخفاء التفاصيل غير الضرورية في الفهرس */
+            .card-container p, 
+            .card-container .school-badge {
+                display: none !important; /* إخفاء النص الطويل والشارة لتوفير المساحة */
+            }
+            .card-container h2 {
+                font-size: 1rem !important;
+                text-align: center !important;
+                margin-top: 0.5rem !important;
+            }
+            .card-container .scientist-img {
+                width: 60px !important;
+                height: 60px !important;
+                margin: 0 auto !important;
+            }
+            .card-container .flex-col {
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 0 !important;
+            }
+            .card-container .flex-1 {
+                text-align: center !important;
+            }
+            /* إظهار اسم النظرية بخط صغير */
+            .card-theory-title {
+                display: block !important;
+                font-size: 0.8rem !important;
+                color: #666 !important;
+                text-align: center !important;
             }
 
-            /* إخفاء المودال التفاعلي */
+            /* --- إصلاح تداخل المحتوى في التفاصيل --- */
+            .page-break { 
+                page-break-before: always !important; 
+                margin-top: 0;
+                padding-top: 2rem !important;
+            }
+
+            /* القاعدة الذهبية: ممنوع القص داخل هذه العناصر */
+            .print-no-split, 
+            table, 
+            tr, 
+            .grid, 
+            li,
+            .bg-slate-50, /* صناديق النماذج */
+            .bg-white.rounded-xl /* الصناديق الرئيسية */
+            {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+            
+            /* تحسين الجداول للطباعة */
+            table { width: 100% !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #ddd !important; padding: 8px !important; }
+            
+            /* إخفاء المودال */
             #detail-modal { display: none !important; }
 
-            /* تكبير الروابط لتكون قابلة للنقر في PDF */
             a { text-decoration: none !important; color: inherit !important; }
         }
 
         /* فئات مساعدة */
-        .print-only { display: none; } /* مخفي في الشاشة العادية */
+        .print-only { display: none; }
+        .card-theory-title { display: none; } /* يظهر فقط في طباعة الفهرس */
 
         .school-badge {
             clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
@@ -86,27 +142,15 @@
             transform: scale(1.05);
         }
 
-        /* تنسيقات النماذج البصرية (الأهرامات والدوائر) */
+        /* تنسيقات النماذج البصرية */
         .pyramid-level {
             clip-path: polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%);
             margin-bottom: 2px;
-            transition: transform 0.2s;
             cursor: default;
         }
-        .pyramid-level:hover {
-            transform: scale(1.02);
-        }
         
-        /* Modal Animation */
-        .modal-enter {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        .modal-enter-active {
-            opacity: 1;
-            transform: scale(1);
-            transition: opacity 300ms, transform 300ms;
-        }
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 300ms, transform 300ms; }
     </style>
 </head>
 <body class="text-gray-800">
@@ -131,7 +175,7 @@
     <!-- مساحة فارغة -->
     <div class="h-24 no-print"></div>
 
-    <!-- صفحة الغلاف (ستكون الصفحة الأولى في PDF) -->
+    <!-- صفحة الغلاف -->
     <div class="cover-page flex flex-col items-center justify-center min-h-[90vh] bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-900 text-white text-center p-8 mb-12 relative overflow-hidden rounded-b-[3rem] shadow-2xl mx-4 mt-4 print:mx-0 print:rounded-none print:h-screen print:mb-0">
         <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         <div class="z-10 border-r-4 border-l-4 border-yellow-500/50 p-12 backdrop-blur-sm max-w-5xl w-full bg-white/5 rounded-2xl print:border-none">
@@ -155,12 +199,12 @@
     <!-- عنوان الفهرس للطباعة فقط -->
     <div class="print-only text-center py-10 page-break">
         <h2 class="text-4xl font-bold text-gray-800 mb-4">فهرس النظريات</h2>
-        <p class="text-gray-500">اضغط على أي بطاقة للانتقال للتفاصيل</p>
-    </div>
-
-    <!-- حاوية البطاقات (تعمل كفهرس في PDF) -->
-    <div class="max-w-6xl mx-auto p-4 grid grid-cols-1 gap-8 mb-12 print:block" id="cards-wrapper">
-        <!-- سيتم ملء البطاقات هنا -->
+        <p class="text-gray-500 mb-8">اضغط على اسم النظرية للانتقال مباشرة للتفاصيل</p>
+        
+        <!-- هنا سيتم نقل البطاقات لتصبح الفهرس -->
+        <div class="max-w-6xl mx-auto p-4 grid grid-cols-1 gap-8 mb-12" id="cards-wrapper">
+            <!-- سيتم ملء البطاقات هنا -->
+        </div>
     </div>
 
     <!-- حاوية التفاصيل للطباعة فقط (الصفحات الفرعية) -->
@@ -185,7 +229,7 @@
     </div>
 
     <script>
-        // نفس قاعدة البيانات السابقة
+        // قاعدة البيانات (نفسها)
         const scientists = [
             // 1897 - Pavlov
             {
@@ -841,12 +885,13 @@
             sorted.forEach(s => {
                 const modalHtml = createModalContent(s);
                 const page = document.createElement('div');
+                // إضافة break-before: always لضمان بداية صفحة جديدة لكل نظرية
                 page.className = 'page-break min-h-screen relative p-8 bg-white border-t-2 border-gray-100';
                 page.id = `detail-${s.id}`; // Anchor ID for linking
                 
                 // Add "Back to Index" link for PDF navigation
                 const backLink = `
-                    <div class="mb-4 text-xs text-gray-400 uppercase tracking-widest border-b pb-2 flex justify-between">
+                    <div class="mb-4 text-xs text-gray-400 uppercase tracking-widest border-b pb-2 flex justify-between print-no-split">
                         <span>تفاصيل النظرية رقم ${s.id}</span>
                         <a href="#cards-wrapper" class="hover:text-indigo-600">عودة للفهرس ⬆</a>
                     </div>
@@ -857,12 +902,12 @@
             });
         }
 
-        // Shared Modal Content Generator
+        // Shared Modal Content Generator (Updated with print classes)
         function createModalContent(s) {
             // Reusing the modal logic but returning string
             const theme = getColors(s.color);
             return `
-                <div class="relative bg-gradient-to-l from-gray-50 to-white p-6 md:p-8 border-b border-gray-200 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+                <div class="relative bg-gradient-to-l from-gray-50 to-white p-6 md:p-8 border-b border-gray-200 flex flex-col md:flex-row gap-6 md:gap-8 items-start print-no-split">
                     <div class="flex-shrink-0 mx-auto md:mx-0">
                         <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg ring-2 ring-${s.color}-100">
                             <img src="https://placehold.co/150x150/${s.color === 'blue' ? '2563eb' : s.color === 'teal' ? '0d9488' : '9333ea'}/ffffff?text=${s.imgCode}" alt="${s.name}" class="w-full h-full object-cover">
@@ -881,8 +926,8 @@
                 </div>
 
                 <div class="p-6 md:p-8 space-y-10">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 relative overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 print-no-split">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 relative overflow-hidden print-no-split">
                             <div class="absolute top-0 right-0 w-2 h-full bg-${s.color}-500"></div>
                             <h4 class="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2 border-b pb-2">
                                 <i class="fas fa-list-ul text-${s.color}-500"></i> مبادئ النظرية
@@ -891,7 +936,7 @@
                                 ${s.principles.map(p => `<li class="flex items-start gap-2 text-gray-700"><span class="mt-1.5 w-2 h-2 rounded-full bg-${s.color}-400 flex-shrink-0"></span><span>${p}</span></li>`).join('')}
                             </ul>
                         </div>
-                        <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 print-no-split">
                             <h4 class="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2 border-b border-gray-200 pb-2">
                                 <i class="fas fa-flask text-pink-500"></i> التجربة / الأساس العلمي
                             </h4>
@@ -899,19 +944,19 @@
                         </div>
                     </div>
 
-                    <div class="bg-slate-50 rounded-2xl p-6 md:p-8 border border-slate-200 text-center">
+                    <div class="bg-slate-50 rounded-2xl p-6 md:p-8 border border-slate-200 text-center print-no-split">
                         <h4 class="font-bold text-slate-800 text-xl mb-2 flex items-center justify-center gap-2">
                             <i class="fas fa-project-diagram text-slate-500"></i> النموذج التوضيحي
                         </h4>
                         ${renderModel(s)}
                     </div>
 
-                    <div>
+                    <div class="print-no-split">
                         <h4 class="font-bold text-gray-800 text-xl mb-6 flex items-center gap-2">
                             <i class="fas fa-briefcase text-green-600"></i> مصفوفة الأثر في التدريب (Training Impact Matrix)
                         </h4>
-                        <div class="overflow-hidden border border-gray-200 rounded-xl shadow-sm">
-                            <table class="min-w-full divide-y divide-gray-200">
+                        <div class="overflow-hidden border border-gray-200 rounded-xl shadow-sm print-no-split">
+                            <table class="min-w-full divide-y divide-gray-200 print-no-split">
                                 <thead class="bg-gray-800 text-white">
                                     <tr>
                                         <th class="px-6 py-3 text-right text-sm font-semibold w-1/3">مجال التركيز</th>
@@ -920,7 +965,7 @@
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     ${s.trainingMatrix.map(row => `
-                                        <tr class="hover:bg-gray-50">
+                                        <tr class="hover:bg-gray-50 print-no-split">
                                             <td class="px-6 py-4 font-bold text-gray-900 bg-gray-50 border-l border-gray-100">${row.focus}</td>
                                             <td class="px-6 py-4 text-gray-600 leading-relaxed"><i class="fas fa-check-circle text-green-500 ml-2"></i>${row.app}</td>
                                         </tr>
@@ -930,7 +975,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-${s.color}-50 p-6 rounded-xl border border-${s.color}-100">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-${s.color}-50 p-6 rounded-xl border border-${s.color}-100 print-no-split">
                         <div>
                             <h5 class="font-bold text-${s.color}-800 mb-3 flex items-center gap-2"><i class="fas fa-school"></i> في التعليم</h5>
                             <ul class="text-sm text-gray-700 space-y-2 list-disc pr-4">
@@ -972,6 +1017,7 @@
                     openModal(scientist.id);
                 };
 
+                // Added 'card-theory-title' for the compact print index
                 card.innerHTML = `
                     <div class="absolute top-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition duration-300 no-print">
                         <span class="bg-gray-800 text-white px-3 py-1 rounded-full text-xs shadow-lg">اضغط للتفاصيل</span>
@@ -989,8 +1035,9 @@
                         </div>
                         <div class="text-center md:text-right flex-1">
                             <h2 class="text-2xl font-bold text-gray-800 group-hover:${theme.text} transition">${scientist.name}</h2>
-                            <p class="${theme.text} font-semibold mt-1 text-sm">${scientist.theory}</p>
-                            <p class="text-gray-500 text-xs mt-2 line-clamp-2 leading-relaxed max-w-lg">${scientist.desc_short}</p>
+                            <p class="card-theory-title mt-1 font-semibold">${scientist.theory}</p>
+                            <p class="${theme.text} font-semibold mt-1 text-sm school-badge-text no-print">${scientist.theory}</p>
+                            <p class="text-gray-500 text-xs mt-2 line-clamp-2 leading-relaxed max-w-lg no-print">${scientist.desc_short}</p>
                         </div>
                         <div class="text-gray-300 group-hover:${theme.icon} transition no-print">
                             <i class="fas fa-chevron-left text-2xl"></i>
@@ -1005,17 +1052,17 @@
         function renderModel(s) {
             let html = '';
             if (s.modelType === 'pyramid') {
-                html = `<div class="flex flex-col items-center w-full max-w-md mx-auto my-6 space-y-1">`;
+                html = `<div class="flex flex-col items-center w-full max-w-md mx-auto my-6 space-y-1 print-no-split">`;
                 s.modelData.forEach((layer, index) => {
                     const widthPercentage = 100 - (index * (80 / s.modelData.length)); 
                     html += `<div class="${layer.color} text-white text-center py-2 px-4 rounded shadow-sm text-xs md:text-sm font-bold w-[${widthPercentage}%] transition hover:scale-105 cursor-default">${layer.level}</div>`;
                 });
                 html += `</div>`;
             } else if (s.modelType === 'flow') {
-                html = `<div class="flex flex-col md:flex-row gap-4 justify-center items-stretch my-6">`;
+                html = `<div class="flex flex-col md:flex-row gap-4 justify-center items-stretch my-6 print-no-split">`;
                 s.modelData.forEach((step, index) => {
                     html += `
-                        <div class="flex-1 bg-white border-2 border-dashed border-gray-300 p-4 rounded-xl text-center relative hover:border-indigo-500 transition group">
+                        <div class="flex-1 bg-white border-2 border-dashed border-gray-300 p-4 rounded-xl text-center relative hover:border-indigo-500 transition group print-no-split">
                             <div class="text-indigo-600 font-bold mb-2">${step.step}</div>
                             <div class="text-sm text-gray-600">${step.text}</div>
                             ${index < s.modelData.length - 1 ? '<div class="hidden md:block absolute top-1/2 -left-3 transform -translate-y-1/2 text-gray-300"><i class="fas fa-arrow-left"></i></div>' : ''}
@@ -1025,10 +1072,10 @@
                 });
                 html += `</div>`;
             } else if (s.modelType === 'list') {
-                html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-6">`;
+                html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-6 print-no-split">`;
                 s.modelData.forEach(item => {
                     html += `
-                        <div class="bg-gray-50 p-4 rounded-lg border-r-4 border-indigo-500 shadow-sm hover:bg-white hover:shadow-md transition">
+                        <div class="bg-gray-50 p-4 rounded-lg border-r-4 border-indigo-500 shadow-sm hover:bg-white hover:shadow-md transition print-no-split">
                             <h4 class="font-bold text-indigo-900 mb-2 text-sm border-b border-gray-200 pb-2">${item.title}</h4>
                             <p class="text-gray-600 text-sm leading-relaxed">${item.content}</p>
                         </div>
@@ -1036,14 +1083,14 @@
                 });
                 html += `</div>`;
             } else if (s.modelType === 'table') {
-                html = `<div class="overflow-x-auto my-6 rounded-lg border border-gray-200 shadow-sm"><table class="min-w-full divide-y divide-gray-200 text-sm">`;
+                html = `<div class="overflow-x-auto my-6 rounded-lg border border-gray-200 shadow-sm print-no-split"><table class="min-w-full divide-y divide-gray-200 text-sm">`;
                 html += `<thead class="bg-gray-100"><tr>
                     <th class="px-4 py-3 text-right font-bold text-gray-700">${s.modelData[0].col1}</th>
                     <th class="px-4 py-3 text-right font-bold text-gray-700">${s.modelData[0].col2}</th>
                     <th class="px-4 py-3 text-right font-bold text-gray-700">${s.modelData[0].col3}</th>
                 </tr></thead><tbody class="divide-y divide-gray-200 bg-white">`;
                 s.modelData.slice(1).forEach(row => {
-                    html += `<tr class="hover:bg-gray-50 transition">
+                    html += `<tr class="hover:bg-gray-50 transition print-no-split">
                         <td class="px-4 py-3 font-semibold text-indigo-900">${row.col1}</td>
                         <td class="px-4 py-3 text-gray-600">${row.col2}</td>
                         <td class="px-4 py-3 text-green-700 bg-green-50">${row.col3}</td>
@@ -1052,7 +1099,7 @@
                 html += `</tbody></table></div>`;
             } else if (s.modelType === 'zpd') {
                 html = `
-                <div class="relative w-64 h-64 mx-auto my-6 flex justify-center items-center text-xs font-bold text-center">
+                <div class="relative w-64 h-64 mx-auto my-6 flex justify-center items-center text-xs font-bold text-center print-no-split">
                     <div class="absolute w-64 h-64 rounded-full bg-purple-100 border-2 border-purple-200 flex items-start justify-center pt-4 text-purple-400"><span class="w-3/4">${s.modelData.outer}</span></div>
                     <div class="absolute w-44 h-44 rounded-full bg-purple-300 border-2 border-white flex items-start justify-center pt-6 text-purple-900 shadow-inner"><span class="w-3/4">${s.modelData.middle}</span></div>
                     <div class="absolute w-24 h-24 rounded-full bg-purple-600 border-2 border-white flex items-center justify-center text-white shadow-lg z-10"><span>${s.modelData.inner}</span></div>
