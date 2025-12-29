@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظريات التعلم - عرض تقديمي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f3f4f6;
+            -webkit-print-color-adjust: exact;
+        }
+        
+        /* شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888; 
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; 
+        }
+
+        /* تنسيقات الطباعة لتكون كل بطاقة في صفحة */
+        @media print {
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+            body { background-color: white; }
+            .card-container { 
+                box-shadow: none; 
+                border: 1px solid #ddd;
+                break-inside: avoid;
+                margin-bottom: 0;
+                height: 100vh; /* ملء الصفحة */
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+            .cover-page { height: 100vh; page-break-after: always; }
+        }
+
+        .school-badge {
+            clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+        }
+        
+        .scientist-img {
+            transition: transform 0.3s ease;
+        }
+        .card-container:hover .scientist-img {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- أدوات التحكم (لا تظهر في الطباعة) -->
+    <div class="no-print fixed top-0 left-0 right-0 bg-white shadow-md z-50 p-4 flex flex-wrap justify-between items-center gap-4">
+        <h1 class="text-xl font-bold text-indigo-900">نظريات التعلم</h1>
+        <div class="flex gap-2 flex-wrap text-sm">
+            <button onclick="filterCards('all')" class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition">الكل</button>
+            <button onclick="filterCards('behavioral')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition">المدرسة السلوكية</button>
+            <button onclick="filterCards('cognitive')" class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-500 transition">المدرسة المعرفية</button>
+            <button onclick="filterCards('social')" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition">الاجتماعية/الإنسانية</button>
+        </div>
+        <button onclick="window.print()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 transition flex items-center gap-2">
+            <i class="fas fa-print"></i> طباعة / حفظ PDF
+        </button>
+    </div>
+
+    <!-- مساحة فارغة للشريط العلوي -->
+    <div class="h-24 no-print"></div>
+
+    <!-- صفحة الغلاف -->
+    <div class="cover-page flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-900 via-blue-800 to-indigo-900 text-white text-center p-8 mb-8 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        <div class="z-10 border-4 border-white/20 p-12 rounded-3xl backdrop-blur-sm max-w-4xl w-full">
+            <i class="fas fa-brain text-8xl mb-6 text-yellow-400 animate-pulse"></i>
+            <h1 class="text-6xl font-black mb-6 tracking-wide">نظريات التعلم</h1>
+            <div class="w-32 h-2 bg-yellow-400 mx-auto mb-8 rounded-full"></div>
+            <p class="text-2xl font-light text-blue-100 mb-12">أبرز علماء نظريات التعلم وأدوارهم في التعليم والتدريب</p>
+            
+            <div class="mt-12 flex flex-col items-center gap-2 text-blue-200">
+                <span class="text-sm uppercase tracking-widest">إعداد وتصميم</span>
+                <h2 class="text-3xl font-bold text-white">محمد علي عسيري</h2>
+                <p class="text-lg">مدرب وكوتش محترف معتمد PCC بمعايير ICF</p>
+                <div class="flex items-center gap-2 mt-4 bg-white/10 px-6 py-2 rounded-full">
+                    <i class="fa-brands fa-x-twitter"></i>
+                    <span dir="ltr">@mohdasiri99</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- حاوية البطاقات -->
+    <div class="max-w-5xl mx-auto p-4 space-y-8" id="cards-wrapper">
+
+        <!-- Template Generator Script will populate this -->
+        
+    </div>
+
+    <script>
+        // بيانات العلماء
+        const scientists = [
+            {
+                id: 1,
+                name: "إيفان بافلوف (Ivan Pavlov)",
+                school: "المدرسة السلوكية (الجذور الفسيولوجية)",
+                category: "behavioral",
+                color: "blue",
+                theory: "الإشراط الكلاسيكي (Classical Conditioning)",
+                principles: [
+                    "التعلم يحدث عبر الارتباط بين مثير محايد ومثير طبيعي.",
+                    "التكرار والاقتران الزمني شرط أساسي لحدوث الاستجابة الشرطية.",
+                    "مفاهيم: التعميم، التمييز، والانطفاء (تلاشي الاستجابة)."
+                ],
+                experiment: "تجربة 'كلب بافلوف'. اقتران صوت الجرس (مثير محايد) بتقديم الطعام (مثير طبيعي) أدى لسالان لعاب الكلب عند سماع الجرس فقط (استجابة شرطية).",
+                eduApps: [
+                    "ربط التعلم بمشاعر إيجابية (خلق بيئة صفية آمنة ومحببة).",
+                    "استخدام التكرار لترسيخ المعلومات الأساسية.",
+                    "معالجة المخاوف المدرسية (فك الارتباط الشرطي السلبي)."
+                ],
+                trainingRole: [
+                    "خلق 'مراسي' (Anchors) إيجابية للمتدرين تربط بين حالات ذهنية معينة ومثيرات محددة.",
+                    "تصميم بيئة تدريبية مريحة لتقليل التوتر وزيادة التقبل."
+                ],
+                imgCode: "IP"
+            },
+            {
+                id: 2,
+                name: "ب. ف. سكينر (B.F. Skinner)",
+                school: "المدرسة السلوكية الراديكالية",
+                category: "behavioral",
+                color: "blue",
+                theory: "الإشراط الإجرائي (Operant Conditioning)",
+                principles: [
+                    "السلوك محكوم بعواقبه (ما يحدث بعد السلوك يحدد احتمالية تكراره).",
+                    "التعزيز (الإيجابي والسلبي) يقوي السلوك.",
+                    "العقاب (الإيجابي والسلبي) يضعف السلوك."
+                ],
+                experiment: "'صندوق سكينر' (Skinner Box). حمامة أو فأر يتعلم ضغط رافعة للحصول على الطعام (تعزيز إيجابي) أو تجنب صدمة خفيفة (تعزيز سلبي).",
+                eduApps: [
+                    "استخدام جداول التعزيز (المكافآت) لتحفيز الطلاب.",
+                    "تقسيم المهام المعقدة إلى خطوات صغيرة ومكافأة كل خطوة (التشكيل).",
+                    "التعليم المبرمج (تقديم المحتوى في وحدات صغيرة مع تغذية راجعة فورية)."
+                ],
+                trainingRole: [
+                    "تصميم أنظمة حوافز ومكافآت في بيئات العمل لزيادة الإنتاجية.",
+                    "تقديم تغذية راجعة فورية ومحددة للمتدربين لتصحيح المسار."
+                ],
+                imgCode: "BS"
+            },
+            {
+                id: 3,
+                name: "إدوارد ثورندايك (Edward Thorndike)",
+                school: "المدرسة السلوكية (الترابطية)",
+                category: "behavioral",
+                color: "blue",
+                theory: "المحاولة والخطأ / قانون الأثر (Law of Effect)",
+                principles: [
+                    "التعلم هو تشكيل روابط بين المثيرات والاستجابات.",
+                    "قانون الأثر: السلوك الذي يتبعه شعور بالرضا يميل للتكرار، والعكس صحيح.",
+                    "قانون التدريب (الاستعمال والإهمال): الروابط تقوى بالممارسة وتضعف بالإهمال."
+                ],
+                experiment: "تجربة 'القط في قفص الألغاز'. يتعلم القط فتح القفص من خلال حركات عشوائية، ثم يثبت السلوك الناجح الذي أدى للخروج والحصول على الطعام.",
+                eduApps: [
+                    "أهمية الممارسة والتكرار الموزع في تعلم المهارات.",
+                    "ضرورة أن تكون نتائج التعلم مرضية للمتعلم (الشعور بالإنجاز).",
+                    "التدرج من السهل إلى الصعب لضمان نجاح المتعلم ورضاه."
+                ],
+                trainingRole: [
+                    "تصميم تمارين عملية تسمح للمتدرب بالمحاولة والخطأ في بيئة آمنة.",
+                    "التركيز على التدريب العملي المستمر لترسيخ المهارات (Learning by Doing)."
+                ],
+                imgCode: "ET"
+            },
+            {
+                id: 4,
+                name: "إدوين جاثري (Edwin Guthrie)",
+                school: "المدرسة السلوكية",
+                category: "behavioral",
+                color: "blue",
+                theory: "التعلم بالاقتران (Contiguity Theory)",
+                principles: [
+                    "التعلم من محاولة واحدة: الرابطة بين المثير والاستجابة تتكون كاملة من أول اقتران ناجح.",
+                    "لا حاجة للتكرار أو التعزيز لبناء الرابطة، بل هما لمنع تكوين روابط أخرى منافسة.",
+                    "النسيان هو تعلم جديد يحل محل القديم (تداخل)."
+                ],
+                experiment: "اعتمد على ملاحظات بسيطة لاقتران الأفعال بالمثيرات المباشرة (لا توجد تجربة معقدة شهيرة).",
+                eduApps: [
+                    "تقديم المادة التعليمية في اللحظة المناسبة التي يكون فيها الطالب مستعداً للاستجابة.",
+                    "استخدام التلميحات المباشرة للمساعدة في تذكر المعلومات.",
+                    "لتغيير عادة سيئة، يجب ممارسة سلوك مختلف في وجود نفس المثير."
+                ],
+                trainingRole: [
+                    "التدريب على مهارات محددة في سياقها الحقيقي (On-the-job training) لضمان الاقتران المباشر.",
+                    "معالجة الأخطاء التدريبية فوراً قبل أن ترسخ كاستجابة."
+                ],
+                imgCode: "EG"
+            },
+            {
+                id: 5,
+                name: "ألبيرت باندورا (Albert Bandura)",
+                school: "المدرسة المعرفية الاجتماعية",
+                category: "social",
+                color: "purple",
+                theory: "التعلم الاجتماعي / التعلم بالملاحظة",
+                principles: [
+                    "الأفراد يتعلمون من خلال ملاحظة سلوك الآخرين ونتائج هذا السلوك (النمذجة).",
+                    "عمليات التعلم الأربع: الانتباه، الاحتفاظ، إعادة الإنتاج الحركي، والدافعية.",
+                    "الكفاءة الذاتية (Self-Efficacy): إيمان الشخص بقدرته على النجاح يؤثر على أدائه."
+                ],
+                experiment: "'تجربة دمية بوبو' (Bobo Doll). الأطفال الذين شاهدوا بالغاً يضرب الدمية بعنف، قاموا بتقليد نفس السلوك العنيف.",
+                eduApps: [
+                    "المعلم كقدوة: أهمية سلوك المعلم كنموذج يحتذى به الطلاب.",
+                    "استخدام استراتيجية النمذجة لتعليم المهارات المعقدة.",
+                    "تعزيز ثقة الطلاب بأنفسهم لرفع كفاءتهم الذاتية."
+                ],
+                trainingRole: [
+                    "استخدام برامج 'التوجيه' (Mentoring) وملازمة الخبراء (Shadowing).",
+                    "عرض قصص نجاح ونماذج أداء متميزة ليقتدي بها المتدربون."
+                ],
+                imgCode: "AB"
+            },
+            {
+                id: 6,
+                name: "جيروم برونر (Jerome Bruner)",
+                school: "المدرسة المعرفية (البنائية)",
+                category: "cognitive",
+                color: "teal",
+                theory: "التعلم بالاكتشاف (Discovery Learning)",
+                principles: [
+                    "المتعلم يبني معرفته بنفسه من خلال استكشاف المعلومات وتنظيمها.",
+                    "المنهج الحلزوني: تدريس نفس المفاهيم بمستويات تعقيد متزايدة عبر الزمن.",
+                    "أنماط التمثيل المعرفي: العملي (بالفعل)، الأيقوني (بالصور)، والرمزي (باللغة)."
+                ],
+                experiment: "تجارب متنوعة على تصنيف الأطفال للأشياء واكتشاف القواعد بدلاً من تلقيها جاهزة.",
+                eduApps: [
+                    "تشجيع الطلاب على طرح الأسئلة والبحث عن الإجابات (التعلم القائم على الاستقصاء).",
+                    "تصميم مناهج تسمح بالعودة للمفاهيم السابقة وتعميقها (الحلزوني).",
+                    "استخدام الوسائل التعليمية المحسوسة والصورية قبل الانتقال للمجردات."
+                ],
+                trainingRole: [
+                    "تصميم ورش عمل تفاعلية تعتمد على حل المشكلات ودراسات الحالة بدلاً من التلقين.",
+                    "تمكين المتدربين من اكتشاف الحلول بأنفسهم لزيادة رسوخ المعلومة."
+                ],
+                imgCode: "JB"
+            },
+            {
+                id: 7,
+                name: "ديفيد أوزوبيل (David Ausubel)",
+                school: "المدرسة المعرفية",
+                category: "cognitive",
+                color: "teal",
+                theory: "التعلم اللفظي ذو المعنى",
+                principles: [
+                    "يحدث التعلم عندما ترتبط المعلومات الجديدة بالمعلومات الموجودة سابقاً في البنية المعرفية.",
+                    "المنظمات المتقدمة (Advance Organizers): مفاهيم عامة تُقدم قبل المحتوى لتمهيد الذهن.",
+                    "التعلم بالاستقبال يمكن أن يكون فعالاً إذا كان ذا معنى، وليس حفظاً صمّاً."
+                ],
+                experiment: "أبحاث نظرية وتطبيقية في تصميم المناهج وطرق عرض المعلومات النصية.",
+                eduApps: [
+                    "استخدام المنظمات المتقدمة (خرائط مفاهيم، ملخصات تمهيدية) في بداية الدرس.",
+                    "ربط الدروس الجديدة بخبرات الطلاب السابقة بشكل صريح.",
+                    "التدرج من المفاهيم العامة والشاملة إلى التفاصيل الدقيقة."
+                ],
+                trainingRole: [
+                    "بدء الجلسات التدريبية بـ 'الصورة الكبيرة' والهيكل العام قبل الدخول في التفاصيل التقنية.",
+                    "التأكد من وجود أرضية معرفية مشتركة لدى المتدربين قبل بناء مهارات جديدة عليها."
+                ],
+                imgCode: "DA"
+            },
+            {
+                id: 8,
+                name: "هوارد جاردنر (Howard Gardner)",
+                school: "المدرسة المعرفية (علم النفس التنموي)",
+                category: "cognitive",
+                color: "teal",
+                theory: "الذكاءات المتعددة (Multiple Intelligences)",
+                principles: [
+                    "الذكاء ليس قدرة واحدة ثابتة (IQ)، بل مجموعة من القدرات المستقلة.",
+                    "8 أنواع: لغوي، منطقي، مكاني، موسيقي، جسدي، شخصي، اجتماعي، وطبيعي.",
+                    "كل شخص يمتلك مزيجاً فريداً من هذه الذكاءات بنسب متفاوتة."
+                ],
+                experiment: "دراسات مطولة على الأفراد الموهوبين، ومرضى إصابات الدماغ، وتطور الأطفال.",
+                eduApps: [
+                    "تنويع أساليب التدريس لتخاطب مختلف أنواع الذكاءات في الفصل الواحد.",
+                    "توفير خيارات متنوعة للطلاب لإظهار فهمهم (مشروع فني، قصة، عرض).",
+                    "تفريد التعليم بناءً على نقاط قوة كل طالب."
+                ],
+                trainingRole: [
+                    "تصميم حقائب تدريبية تتضمن أنشطة متنوعة (بصرية، سمعية، حركية، تفاعلية).",
+                    "مساعدة المتدربين (خاصة القادة) على فهم أنماط ذكائهم وذكاء فرق عملهم لتحسين التواصل."
+                ],
+                imgCode: "HG"
+            },
+            {
+                id: 9,
+                name: "إريك إريكسون (Erik Erikson)",
+                school: "مدرسة التحليل النفسي (النفسي الاجتماعي)",
+                category: "social",
+                color: "purple",
+                theory: "التطور النفسي الاجتماعي",
+                principles: [
+                    "يتطور الإنسان عبر 8 مراحل حياتية، من الميلاد حتى الشيخوخة.",
+                    "كل مرحلة تتميز بـ 'أزمة' أو تحدٍ نفسي اجتماعي يجب حله.",
+                    "النجاح في حل الأزمة يؤدي لاكتساب فضيلة، والفشل يؤدي لصعوبات."
+                ],
+                experiment: "دراسات إكلينيكية وملاحظات ثقافية مقارنة، وليس تجارب معملية.",
+                eduApps: [
+                    "مراعاة الاحتياجات النفسية للطلاب حسب مرحلتهم العمرية.",
+                    "توفير بيئة داعمة تساعد الطلاب على تجاوز أزماتهم النمائية بنجاح."
+                ],
+                trainingRole: [
+                    "فهم الدوافع والتحديات النفسية للمتدربين البالغين (مثل أزمة منتصف العمر).",
+                    "مساعدة الكوتش (Coach) للمستفيد في فهم مرحلته الحياتية وتحدياتها لاتخاذ قرارات أفضل."
+                ],
+                imgCode: "EE"
+            },
+            {
+                id: 10,
+                name: "جان بياجيه (Jean Piaget)",
+                school: "المدرسة المعرفية (البنائية المعرفية)",
+                category: "cognitive",
+                color: "teal",
+                theory: "التطور المعرفي (Cognitive Development)",
+                principles: [
+                    "الأطفال يبنون فهمهم للعالم بنشاط، وليسوا متلقين سلبيين.",
+                    "4 مراحل متسلسلة: الحسية-الحركية، ما قبل العمليات، العمليات المادية، والعمليات المجردة.",
+                    "عمليات التكيف: التمثل (دمج) والمواءمة (تعديل)."
+                ],
+                experiment: "تجارب 'الاحتفاظ' (Conservation). مثل تجربة كوب الماء الطويل والقصير.",
+                eduApps: [
+                    "تقديم محتوى تعليمي يتناسب مع المرحلة العمرية والعقلية للطالب.",
+                    "أهمية التعلم النشط والتجريب المحسوس.",
+                    "النظر للأخطاء كجزء طبيعي وضروري من عملية بناء المعرفة."
+                ],
+                trainingRole: [
+                    "مراعاة الفروق الفردية في القدرة على التفكير المجرد لدى البالغين.",
+                    "تصميم أنشطة تتحدى المخططات الذهنية الحالية للمتدربين لإحداث 'مواءمة' وتغيير في القناعات."
+                ],
+                imgCode: "JP"
+            },
+            {
+                id: 11,
+                name: "جون ديوي (John Dewey)",
+                school: "المدرسة الوظيفية (التربية التقدمية)",
+                category: "social",
+                color: "purple",
+                theory: "التعلم بالعمل (Learning by Doing)",
+                principles: [
+                    "التعليم يجب أن يكون مرتبطاً بالحياة الواقعية وليس مجرد تحضير لها.",
+                    "التعلم الفعال يحدث من خلال الخبرة المباشرة وحل المشكلات.",
+                    "الديمقراطية في التعليم، والطفل هو مركز العملية."
+                ],
+                experiment: "تأسيس 'المدرسة المعملية' (Laboratory School) في جامعة شيكاغو.",
+                eduApps: [
+                    "التعلم القائم على المشاريع (PBL) وحل المشكلات الحقيقية.",
+                    "الرحلات الميدانية وربط المدرسة بالمجتمع.",
+                    "التركيز على التفكير الناقد بدلاً من الحفظ."
+                ],
+                trainingRole: [
+                    "أساس التدريب الميداني والتطبيقي في الشركات.",
+                    "اعتماد ورش العمل على محاكاة واقع العمل الفعلي لحل مشكلات حقيقية."
+                ],
+                imgCode: "JD"
+            },
+            {
+                id: 12,
+                name: "ليف فيجوتسكي (Lev Vygotsky)",
+                school: "المدرسة المعرفية (الاجتماعية الثقافية)",
+                category: "social",
+                color: "purple",
+                theory: "منطقة النمو الوشيك (ZPD)",
+                principles: [
+                    "التطور المعرفي ينشأ أولاً على المستوى الاجتماعي ثم يتحول إلى مستوى فردي.",
+                    "ZPD: المسافة بين ما يمكن للمتعلم فعله بمفرده، وما يمكنه فعله بمساعدة.",
+                    "السقالات التعليمية (Scaffolding): الدعم المؤقت الذي يقدمه المعلم."
+                ],
+                experiment: "أبحاث حول دور اللغة والكلام الخاص في توجيه تفكير الطفل وسلوكه.",
+                eduApps: [
+                    "التعلم التعاوني: تشجيع عمل الطلاب في مجموعات متفاوتة القدرات.",
+                    "دور المعلم كميسر يقدم 'السقالات' والدعم اللازم ثم ينسحب.",
+                    "أهمية الحوار والنقاش في الفصل لتنمية التفكير."
+                ],
+                trainingRole: [
+                    "أساس برامج التوجيه (Mentoring) والكوتشينج.",
+                    "تصميم مهام تدريبية تتحدى قدرات المتدرب الحالية قليلاً (في منطقة نموه الوشيك)."
+                ],
+                imgCode: "LV"
+            },
+            {
+                id: 13,
+                name: "جون واتسون (John B. Watson)",
+                school: "مؤسس المدرسة السلوكية",
+                category: "behavioral",
+                color: "blue",
+                theory: "السلوكية الكلاسيكية (Behaviorism)",
+                principles: [
+                    "دراسة السلوك الظاهر القابل للملاحظة فقط، ورفض العمليات العقلية.",
+                    "البيئة هي المحدد الأساسي للسلوك.",
+                    "يمكن تشكيل أي شخص ليصبح أي شيء من خلال التحكم في بيئته."
+                ],
+                experiment: "تجربة 'ألبرت الصغير' (Little Albert). إشراط طفل للخوف من فأر أبيض.",
+                eduApps: [
+                    "التركيز على الأهداف السلوكية الواضحة والقابلة للقياس.",
+                    "أهمية تصميم البيئة الصفية للتحكم في سلوك الطلاب."
+                ],
+                trainingRole: [
+                    "تحديد مؤشرات أداء سلوكية (KPIs) واضحة للموظفين.",
+                    "التأكيد على أن التدريب وتعديل البيئة يمكن أن يغير أداء أي موظف."
+                ],
+                imgCode: "JW"
+            },
+            {
+                id: 14,
+                name: "دونالد نورمان (Donald Norman)",
+                school: "المدرسة المعرفية / هندسة العوامل البشرية",
+                category: "cognitive",
+                color: "teal",
+                theory: "معالجة المعلومات / التصميم المتمحور حول المستخدم",
+                principles: [
+                    "العقل البشري يعمل كجهاز كمبيوتر: مدخلات، معالجة، ومخرجات.",
+                    "أهمية الذاكرة (قصيرة وطويلة المدى) والانتباه في التعلم.",
+                    "مبادئ التصميم الجيد: الوضوح، التغذية الراجعة، والحد من العبء المعرفي."
+                ],
+                experiment: "أبحاث تطبيقية في سهولة الاستخدام (Usability) وتصميم الأشياء اليومية.",
+                eduApps: [
+                    "تصميم المواد التعليمية بطريقة منظمة تسهل معالجتها.",
+                    "مراعاة محدودية الذاكرة العاملة وعدم إغراق الطالب بمعلومات كثيرة.",
+                    "استخدام استراتيجيات لتحسين التذكر مثل التسميع والتنظيم."
+                ],
+                trainingRole: [
+                    "تصميم شرائح عرض ومواد تدريبية بصرية واضحة (تقليل العبء المعرفي).",
+                    "تصميم أنظمة عمل وبرمجيات سهلة الاستخدام للموظفين لتقليل الأخطاء."
+                ],
+                imgCode: "DN"
+            },
+            {
+                id: 15,
+                name: "أبراهام ماسلو (Abraham Maslow)",
+                school: "المدرسة الإنسانية",
+                category: "social",
+                color: "purple",
+                theory: "هرم الاحتياجات الإنسانية (Hierarchy of Needs)",
+                principles: [
+                    "لدى الإنسان خمسة مستويات من الاحتياجات مرتبة هرمياً.",
+                    "يجب إشباع الاحتياجات الأساسية قبل العليا.",
+                    "الترتيب: الفسيولوجية، الأمان، الانتماء، التقدير، وتحقيق الذات."
+                ],
+                experiment: "دراسات نوعية للسير الذاتية لأشخاص ناجحين ومحققين لذواتهم.",
+                eduApps: [
+                    "لا يمكن للطالب التعلم بفعالية إذا كان جائعاً أو خائفاً.",
+                    "تعزيز شعور الطلاب بالانتماء للفصل وتقدير جهودهم."
+                ],
+                trainingRole: [
+                    "فهم دوافع المتدربين: التحفيز لا يكون بالمال فقط بل بالتقدير والنمو.",
+                    "ضمان توفر بيئة تدريب مريحة (غذاء، أمان نفسي) كشرط للتعلم."
+                ],
+                imgCode: "AM"
+            },
+            {
+                id: 16,
+                name: "بنجامين بلوم (Benjamin Bloom)",
+                school: "المدرسة المعرفية (قياس وتقويم)",
+                category: "cognitive",
+                color: "teal",
+                theory: "تصنيف بلوم للأهداف التعليمية",
+                principles: [
+                    "الأهداف التعليمية: معرفية، وجدانية، ونفسحركية.",
+                    "المجال المعرفي هرمي: التذكر، الفهم، التطبيق، التحليل، التقويم، الابتكار.",
+                    "التعلم للإتقان: يمكن للطلاب الإتقان إذا مُنحوا الوقت والدعم."
+                ],
+                experiment: "أبحاث موسعة في القياس والتقويم وتأثير 'التعلم للإتقان'.",
+                eduApps: [
+                    "استخدام التصنيف لكتابة أهداف تعليمية متدرجة.",
+                    "تصميم اختبارات تقيس مستويات مختلفة من الفهم.",
+                    "تطبيق مبدأ 'التعلم للإتقان'."
+                ],
+                trainingRole: [
+                    "تصميم أهداف البرامج التدريبية لتنتقل بالمتدرب من 'المعرفة' إلى 'التطبيق'.",
+                    "استخدام التصنيف في بناء أدوات تقييم أثر التدريب وقياس العائد."
+                ],
+                imgCode: "BB"
+            }
+        ];
+
+        function getColors(color) {
+            const themes = {
+                blue: { bg: 'bg-blue-50', border: 'border-blue-200', header: 'bg-blue-600', text: 'text-blue-800', light: 'bg-blue-100', icon: 'text-blue-600' },
+                teal: { bg: 'bg-teal-50', border: 'border-teal-200', header: 'bg-teal-600', text: 'text-teal-800', light: 'bg-teal-100', icon: 'text-teal-600' },
+                purple: { bg: 'bg-purple-50', border: 'border-purple-200', header: 'bg-purple-600', text: 'text-purple-800', light: 'bg-purple-100', icon: 'text-purple-600' }
+            };
+            return themes[color] || themes.blue;
+        }
+
+        function renderCards(filter = 'all') {
+            const container = document.getElementById('cards-wrapper');
+            container.innerHTML = '';
+
+            scientists.forEach(scientist => {
+                if (filter !== 'all' && scientist.category !== filter) return;
+
+                const theme = getColors(scientist.color);
+                
+                // Card HTML Structure
+                const card = document.createElement('div');
+                card.className = `card-container bg-white rounded-2xl overflow-hidden shadow-lg border-2 ${theme.border} page-break relative`;
+                
+                card.innerHTML = `
+                    <!-- Header -->
+                    <div class="relative bg-gray-50 p-6 flex items-center gap-6 border-b ${theme.border}">
+                        <div class="absolute top-0 left-8 bg-${scientist.color}-600 text-white text-xs font-bold px-4 py-1 rounded-b-lg shadow-sm school-badge">
+                            ${scientist.school}
+                        </div>
+                        <div class="w-24 h-24 flex-shrink-0 bg-gray-200 rounded-full overflow-hidden border-4 border-white shadow-md scientist-img relative">
+                            <img src="https://placehold.co/150x150/${scientist.color === 'blue' ? '2563eb' : scientist.color === 'teal' ? '0d9488' : '9333ea'}/ffffff?text=${scientist.imgCode}" alt="${scientist.name}" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">${scientist.name}</h2>
+                            <p class="${theme.text} font-semibold mt-1 text-sm">${scientist.school}</p>
+                        </div>
+                    </div>
+
+                    <!-- Body Grid -->
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Theory Side -->
+                        <div class="space-y-4">
+                            <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                                <h3 class="flex items-center gap-2 font-bold text-gray-700 mb-2">
+                                    <i class="fas fa-lightbulb ${theme.icon}"></i> النظرية الأساسية
+                                </h3>
+                                <p class="text-gray-600 font-semibold">${scientist.theory}</p>
+                            </div>
+
+                            <div>
+                                <h3 class="flex items-center gap-2 font-bold text-gray-700 mb-2 text-sm">
+                                    <i class="fas fa-list-check ${theme.icon}"></i> مبادئ النظرية
+                                </h3>
+                                <ul class="list-disc list-outside mr-5 text-gray-600 text-sm space-y-1">
+                                    ${scientist.principles.map(p => `<li>${p}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Experiment Side -->
+                        <div class="${theme.bg} p-4 rounded-xl border ${theme.border}">
+                            <h3 class="flex items-center gap-2 font-bold text-gray-700 mb-3 text-sm">
+                                <i class="fas fa-flask ${theme.icon}"></i> التجربة / التطبيق الشهير
+                            </h3>
+                            <p class="text-gray-700 text-sm leading-relaxed italic">
+                                "${scientist.experiment}"
+                            </p>
+                            <div class="mt-4 flex justify-center opacity-20">
+                                <i class="fas fa-microscope text-6xl ${theme.text}"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Applications Footer -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 border-t ${theme.border}">
+                        <!-- Educational Apps -->
+                        <div class="p-5 border-l ${theme.border}">
+                            <h4 class="font-bold text-gray-700 mb-2 text-sm flex items-center gap-2">
+                                <i class="fas fa-graduation-cap text-yellow-500"></i> التطبيقات التربوية
+                            </h4>
+                            <ul class="text-sm text-gray-600 space-y-1 list-disc mr-4">
+                                ${scientist.eduApps.map(a => `<li>${a}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <!-- Training Role (Highlighted) -->
+                        <div class="p-5 bg-gray-50">
+                            <h4 class="font-bold text-gray-800 mb-2 text-sm flex items-center gap-2">
+                                <i class="fas fa-briefcase text-green-600"></i> الدور في التدريب
+                            </h4>
+                            <ul class="text-sm text-gray-700 font-medium space-y-1 list-none">
+                                ${scientist.trainingRole.map(r => `<li class="flex items-start gap-2"><span class="text-green-500 mt-1">✔</span><span>${r}</span></li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Fixed Footer -->
+                    <div class="bg-gray-800 text-white p-3 flex justify-between items-center text-xs">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-brands fa-x-twitter"></i> @mohdasiri99
+                        </div>
+                        <div class="text-gray-300">
+                            محمد علي عسيري - مدرب وكوتش محترف معتمد PCC
+                        </div>
+                        <div class="font-mono opacity-50">#${scientist.id}</div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function filterCards(type) {
+            renderCards(type);
+        }
+
+        // Initial Render
+        renderCards();
+
+    </script>
+</body>
+</html>
