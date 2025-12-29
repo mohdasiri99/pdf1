@@ -11,7 +11,8 @@
         body {
             font-family: 'Cairo', sans-serif;
             background-color: #f0f2f5;
-            -webkit-print-color-adjust: exact;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
         
         /* شريط التمرير */
@@ -29,19 +30,50 @@
             background: #555; 
         }
 
-        /* تنسيقات الطباعة */
+        /* --- تنسيقات الطباعة المتقدمة (PDF) --- */
         @media print {
-            .no-print { display: none !important; }
-            .page-break { page-break-before: always; }
-            body { background-color: white; }
-            .card-container { 
-                border: 1px solid #ddd;
-                break-inside: avoid;
-                margin-bottom: 2rem;
+            /* إعدادات الصفحة: إلغاء الهوامش تماماً */
+            @page {
+                size: A4;
+                margin: 0;
             }
-            /* إخفاء المودال عند الطباعة */
+            
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: white;
+            }
+
+            /* إخفاء عناصر التحكم والشاشة */
+            .no-print { display: none !important; }
+            
+            /* إظهار عناصر الطباعة المخفية */
+            .print-only { display: block !important; }
+            
+            /* تحسين فواصل الصفحات */
+            .page-break { 
+                break-before: page; 
+                page-break-before: always; 
+                margin-top: 0;
+            }
+
+            /* البطاقة الرئيسية في الطباعة لا تحتاج ظل */
+            .card-container {
+                box-shadow: none !important;
+                border: 1px solid #eee !important;
+                break-inside: avoid;
+                margin: 2cm; /* هوامش داخلية للبطاقات في الفهرس فقط */
+            }
+
+            /* إخفاء المودال التفاعلي */
             #detail-modal { display: none !important; }
+
+            /* تكبير الروابط لتكون قابلة للنقر في PDF */
+            a { text-decoration: none !important; color: inherit !important; }
         }
+
+        /* فئات مساعدة */
+        .print-only { display: none; } /* مخفي في الشاشة العادية */
 
         .school-badge {
             clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
@@ -65,21 +97,6 @@
             transform: scale(1.02);
         }
         
-        /* ZPD Circles */
-        .circle-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .circle {
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
         /* Modal Animation */
         .modal-enter {
             opacity: 0;
@@ -106,28 +123,28 @@
             <button onclick="filterCards('cognitive')" class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-500 transition shadow-sm">المدرسة المعرفية</button>
             <button onclick="filterCards('social')" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition shadow-sm">الاجتماعية/الإنسانية</button>
         </div>
-        <button onclick="window.print()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 transition flex items-center gap-2 shadow-sm">
-            <i class="fas fa-file-pdf"></i> حفظ PDF
+        <button onclick="window.print()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 transition flex items-center gap-2 shadow-sm animate-pulse">
+            <i class="fas fa-file-pdf"></i> تحميل PDF (تفاعلي)
         </button>
     </div>
 
     <!-- مساحة فارغة -->
     <div class="h-24 no-print"></div>
 
-    <!-- صفحة الغلاف -->
-    <div class="cover-page flex flex-col items-center justify-center min-h-[90vh] bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-900 text-white text-center p-8 mb-12 relative overflow-hidden rounded-b-[3rem] shadow-2xl mx-4 mt-4">
+    <!-- صفحة الغلاف (ستكون الصفحة الأولى في PDF) -->
+    <div class="cover-page flex flex-col items-center justify-center min-h-[90vh] bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-900 text-white text-center p-8 mb-12 relative overflow-hidden rounded-b-[3rem] shadow-2xl mx-4 mt-4 print:mx-0 print:rounded-none print:h-screen print:mb-0">
         <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-        <div class="z-10 border-r-4 border-l-4 border-yellow-500/50 p-12 backdrop-blur-sm max-w-5xl w-full bg-white/5 rounded-2xl">
-            <i class="fas fa-brain text-8xl mb-6 text-yellow-400 animate-pulse"></i>
-            <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-wide leading-tight">نظريات التعلم<br><span class="text-3xl md:text-5xl font-light text-blue-200">وتطبيقاتها في التدريب</span></h1>
-            <div class="w-48 h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-8"></div>
+        <div class="z-10 border-r-4 border-l-4 border-yellow-500/50 p-12 backdrop-blur-sm max-w-5xl w-full bg-white/5 rounded-2xl print:border-none">
+            <i class="fas fa-brain text-8xl mb-6 text-yellow-400 animate-pulse print:text-indigo-600 print:animate-none"></i>
+            <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-wide leading-tight">نظريات التعلم<br><span class="text-3xl md:text-5xl font-light text-blue-200 print:text-gray-300">وتطبيقاتها في التدريب</span></h1>
+            <div class="w-48 h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-8 print:bg-gray-400"></div>
             <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">دليل شامل يستعرض تطور الفكر التربوي من الكلاسيكية إلى البنائية، مع نماذج تطبيقية لتعزيز كفاءة التدريب وتطوير الموارد البشرية.</p>
             
             <div class="flex flex-col items-center gap-2 text-blue-200 mt-8 border-t border-white/10 pt-8">
                 <span class="text-xs uppercase tracking-[0.3em] opacity-70">إعداد وتطوير</span>
                 <h2 class="text-2xl font-bold text-white">محمد علي عسيري</h2>
                 <p class="text-base opacity-90">مدرب وكوتش محترف معتمد PCC بمعايير ICF</p>
-                <div class="flex items-center gap-2 mt-2 bg-white/10 px-4 py-1 rounded-full text-sm hover:bg-white/20 transition cursor-pointer">
+                <div class="flex items-center gap-2 mt-2 bg-white/10 px-4 py-1 rounded-full text-sm hover:bg-white/20 transition cursor-pointer print:text-gray-800 print:bg-white">
                     <i class="fa-brands fa-x-twitter"></i>
                     <span dir="ltr">@mohdasiri99</span>
                 </div>
@@ -135,29 +152,31 @@
         </div>
     </div>
 
-    <!-- حاوية البطاقات -->
-    <div class="max-w-6xl mx-auto p-4 grid grid-cols-1 gap-8 mb-12" id="cards-wrapper">
+    <!-- عنوان الفهرس للطباعة فقط -->
+    <div class="print-only text-center py-10 page-break">
+        <h2 class="text-4xl font-bold text-gray-800 mb-4">فهرس النظريات</h2>
+        <p class="text-gray-500">اضغط على أي بطاقة للانتقال للتفاصيل</p>
+    </div>
+
+    <!-- حاوية البطاقات (تعمل كفهرس في PDF) -->
+    <div class="max-w-6xl mx-auto p-4 grid grid-cols-1 gap-8 mb-12 print:block" id="cards-wrapper">
         <!-- سيتم ملء البطاقات هنا -->
     </div>
 
-    <!-- نافذة التفاصيل (Modal) -->
-    <div id="detail-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <!-- Background backdrop -->
-        <div class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+    <!-- حاوية التفاصيل للطباعة فقط (الصفحات الفرعية) -->
+    <div id="print-details-container" class="print-only">
+        <!-- سيتم توليد صفحات التفاصيل هنا تلقائياً -->
+    </div>
 
+    <!-- نافذة التفاصيل (Modal - للشاشة فقط) -->
+    <div id="detail-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto no-print" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div class="relative transform overflow-hidden rounded-2xl bg-white text-right shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-5xl border border-gray-200">
-                
-                <!-- زر الإغلاق -->
                 <button onclick="closeModal()" class="absolute top-4 left-4 z-10 bg-gray-100 hover:bg-red-100 text-gray-600 hover:text-red-600 rounded-full w-10 h-10 flex items-center justify-center transition shadow-sm">
                     <i class="fas fa-times text-xl"></i>
                 </button>
-
-                <!-- محتوى المودال -->
-                <div class="bg-white" id="modal-content">
-                    <!-- سيتم حقن المحتوى هنا ديناميكياً -->
-                </div>
-                
+                <div class="bg-white" id="modal-content"></div>
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-100">
                     <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" onclick="closeModal()">إغلاق</button>
                 </div>
@@ -166,7 +185,7 @@
     </div>
 
     <script>
-        // قاعدة البيانات الموسعة (مرتبة زمنياً)
+        // نفس قاعدة البيانات السابقة
         const scientists = [
             // 1897 - Pavlov
             {
@@ -193,9 +212,8 @@
                     "استخدام 'المراسي' (Anchors) لربط المتدرب بحالة ذهنية نشطة.",
                     "تصميم قاعة التدريب لتكون مثيراً إيجابياً (الإضاءة، الرائحة، الألوان)."
                 ],
-                // بيانات موسعة
                 desc_long: `تعد نظرية بافلوف حجر الزاوية في المدرسة السلوكية. الفكرة الجوهرية هي أن الكائنات الحية (بما في ذلك البشر) تتعلم من خلال تكوين روابط لا إرادية بين المحفزات البيئية وردود الفعل الفسيولوجية أو العاطفية. في سياق التدريب، هذا يعني أن استجابات المتدربين (حماس، ملل، خوف) غالباً ما تكون شرطية بناءً على خبرات سابقة، ويمكن "إعادة برمجتها".`,
-                modelType: "flow", // نوع النموذج البصري
+                modelType: "flow",
                 modelData: [
                     { step: "قبل الإشراط", text: "جرس (لا استجابة) | طعام (لعاب)" },
                     { step: "أثناء الإشراط", text: "جرس + طعام = لعاب (تكرار)" },
@@ -347,7 +365,7 @@
                     "تصميم مهام تحدي تفوق قدرات المتدرب قليلاً مع توفير مشرف."
                 ],
                 desc_long: `نظرية فيجوتسكي هي الأساس لبرامج التوجيه والإرشاد في المؤسسات. التدريب ليس مجرد نقل معلومة، بل هو "تفاعل" بين خبير ومبتدئ لرفع المبتدئ إلى مستوى أعلى لا يمكنه الوصول إليه بمفرده.`,
-                modelType: "zpd", // رسم دوائر متداخلة
+                modelType: "zpd",
                 modelData: {
                     inner: "ما أستطيع فعله وحدي",
                     middle: "منطقة النمو الوشيك (ZPD) - ما أفعله بمساعدة",
@@ -505,7 +523,7 @@
                     "التركيز على التطوير والنمو للموظفين المتميزين."
                 ],
                 desc_long: `ماسلو يذكرنا أن المتدرب "إنسان" أولاً. إذا كانت القاعة باردة جداً أو المتدرب قلق بشأن وظيفته (الأمان)، لن يتعلم مهارات القيادة (تحقيق الذات). المدرب الناجح يمسح احتياجات القاعة ويعالجها قبل البدء بالمحتوى العلمي.`,
-                modelType: "pyramid", // رسم الهرم
+                modelType: "pyramid",
                 modelData: [
                     { level: "تحقيق الذات (الابتكار، حل المشاكل)", color: "bg-purple-600" },
                     { level: "التقدير (الثقة، الاحترام، الإنجاز)", color: "bg-purple-500" },
@@ -812,137 +830,38 @@
             return themes[color] || themes.blue;
         }
 
-        function renderCards(filter = 'all') {
-            const container = document.getElementById('cards-wrapper');
+        // Generate Print Detail Pages
+        function generatePrintDetails() {
+            const container = document.getElementById('print-details-container');
             container.innerHTML = '';
+            
+            // ترتيب زمني
+            const sorted = [...scientists].sort((a, b) => a.year - b.year);
 
-            // تصفية ثم ترتيب زمني
-            const filtered = scientists.filter(s => filter === 'all' || s.category === filter);
-            filtered.sort((a, b) => a.year - b.year);
-
-            filtered.forEach(scientist => {
-                const theme = getColors(scientist.color);
+            sorted.forEach(s => {
+                const modalHtml = createModalContent(s);
+                const page = document.createElement('div');
+                page.className = 'page-break min-h-screen relative p-8 bg-white border-t-2 border-gray-100';
+                page.id = `detail-${s.id}`; // Anchor ID for linking
                 
-                const card = document.createElement('div');
-                card.className = `card-container bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-2xl transition duration-300 page-break relative group cursor-pointer`;
-                card.onclick = () => openModal(scientist.id); // فتح المودال عند الضغط
-                
-                card.innerHTML = `
-                    <div class="absolute top-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition duration-300">
-                        <span class="bg-gray-800 text-white px-3 py-1 rounded-full text-xs shadow-lg">اضغط للتفاصيل</span>
-                    </div>
-                    
-                    <div class="relative bg-gray-50 p-6 flex flex-col md:flex-row items-center gap-6 border-b ${theme.border}">
-                        <div class="absolute top-0 left-8 bg-${scientist.color}-600 text-white text-xs font-bold px-4 py-1 rounded-b-lg shadow-sm school-badge">
-                            ${scientist.school}
-                        </div>
-                        <div class="relative">
-                            <div class="w-24 h-24 flex-shrink-0 bg-gray-200 rounded-full overflow-hidden border-4 border-white shadow-md scientist-img">
-                                <img src="https://placehold.co/150x150/${scientist.color === 'blue' ? '2563eb' : scientist.color === 'teal' ? '0d9488' : '9333ea'}/ffffff?text=${scientist.imgCode}" alt="${scientist.name}" class="w-full h-full object-cover">
-                            </div>
-                            <span class="absolute -bottom-2 right-1/2 transform translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-0.5 rounded-full font-mono border-2 border-white shadow-sm">${scientist.year}</span>
-                        </div>
-                        <div class="text-center md:text-right flex-1">
-                            <h2 class="text-2xl font-bold text-gray-800 group-hover:${theme.text} transition">${scientist.name}</h2>
-                            <p class="${theme.text} font-semibold mt-1 text-sm">${scientist.theory}</p>
-                            <p class="text-gray-500 text-xs mt-2 line-clamp-2 leading-relaxed max-w-lg">${scientist.desc_short}</p>
-                        </div>
-                        <div class="text-gray-300 group-hover:${theme.icon} transition">
-                            <i class="fas fa-chevron-left text-2xl"></i>
-                        </div>
+                // Add "Back to Index" link for PDF navigation
+                const backLink = `
+                    <div class="mb-4 text-xs text-gray-400 uppercase tracking-widest border-b pb-2 flex justify-between">
+                        <span>تفاصيل النظرية رقم ${s.id}</span>
+                        <a href="#cards-wrapper" class="hover:text-indigo-600">عودة للفهرس ⬆</a>
                     </div>
                 `;
-                container.appendChild(card);
+
+                page.innerHTML = backLink + modalHtml;
+                container.appendChild(page);
             });
         }
 
-        // --- دوال بناء النماذج البصرية ---
-
-        function renderModel(s) {
-            let html = '';
-            
-            if (s.modelType === 'pyramid') {
-                html = `<div class="flex flex-col items-center w-full max-w-md mx-auto my-6 space-y-1">`;
-                s.modelData.forEach((layer, index) => {
-                    // حساب العرض بناء على المستوى (الهرم)
-                    const widthPercentage = 100 - (index * (80 / s.modelData.length)); 
-                    html += `
-                        <div class="${layer.color} text-white text-center py-2 px-4 rounded shadow-sm text-xs md:text-sm font-bold w-[${widthPercentage}%] transition hover:scale-105 cursor-default">
-                            ${layer.level}
-                        </div>
-                    `;
-                });
-                html += `</div>`;
-                
-            } else if (s.modelType === 'flow') {
-                html = `<div class="flex flex-col md:flex-row gap-4 justify-center items-stretch my-6">`;
-                s.modelData.forEach((step, index) => {
-                    html += `
-                        <div class="flex-1 bg-white border-2 border-dashed border-gray-300 p-4 rounded-xl text-center relative hover:border-indigo-500 transition group">
-                            <div class="text-indigo-600 font-bold mb-2">${step.step}</div>
-                            <div class="text-sm text-gray-600">${step.text}</div>
-                            ${index < s.modelData.length - 1 ? '<div class="hidden md:block absolute top-1/2 -left-3 transform -translate-y-1/2 text-gray-300"><i class="fas fa-arrow-left"></i></div>' : ''}
-                            ${index < s.modelData.length - 1 ? '<div class="md:hidden absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-gray-300"><i class="fas fa-arrow-down"></i></div>' : ''}
-                        </div>
-                    `;
-                });
-                html += `</div>`;
-
-            } else if (s.modelType === 'list') {
-                html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-6">`;
-                s.modelData.forEach(item => {
-                    html += `
-                        <div class="bg-gray-50 p-4 rounded-lg border-r-4 border-indigo-500 shadow-sm hover:bg-white hover:shadow-md transition">
-                            <h4 class="font-bold text-indigo-900 mb-2 text-sm border-b border-gray-200 pb-2">${item.title}</h4>
-                            <p class="text-gray-600 text-sm leading-relaxed">${item.content}</p>
-                        </div>
-                    `;
-                });
-                html += `</div>`;
-
-            } else if (s.modelType === 'table') {
-                html = `<div class="overflow-x-auto my-6 rounded-lg border border-gray-200 shadow-sm"><table class="min-w-full divide-y divide-gray-200 text-sm">`;
-                html += `<thead class="bg-gray-100"><tr>
-                    <th class="px-4 py-3 text-right font-bold text-gray-700">${s.modelData[0].col1}</th>
-                    <th class="px-4 py-3 text-right font-bold text-gray-700">${s.modelData[0].col2}</th>
-                    <th class="px-4 py-3 text-right font-bold text-gray-700">${s.modelData[0].col3}</th>
-                </tr></thead><tbody class="divide-y divide-gray-200 bg-white">`;
-                s.modelData.slice(1).forEach(row => {
-                    html += `<tr class="hover:bg-gray-50 transition">
-                        <td class="px-4 py-3 font-semibold text-indigo-900">${row.col1}</td>
-                        <td class="px-4 py-3 text-gray-600">${row.col2}</td>
-                        <td class="px-4 py-3 text-green-700 bg-green-50">${row.col3}</td>
-                    </tr>`;
-                });
-                html += `</tbody></table></div>`;
-            } else if (s.modelType === 'zpd') {
-                html = `
-                <div class="relative w-64 h-64 mx-auto my-6 flex justify-center items-center text-xs font-bold text-center">
-                    <div class="absolute w-64 h-64 rounded-full bg-purple-100 border-2 border-purple-200 flex items-start justify-center pt-4 text-purple-400">
-                        <span class="w-3/4">${s.modelData.outer}</span>
-                    </div>
-                    <div class="absolute w-44 h-44 rounded-full bg-purple-300 border-2 border-white flex items-start justify-center pt-6 text-purple-900 shadow-inner">
-                        <span class="w-3/4">${s.modelData.middle}</span>
-                    </div>
-                    <div class="absolute w-24 h-24 rounded-full bg-purple-600 border-2 border-white flex items-center justify-center text-white shadow-lg z-10">
-                        <span>${s.modelData.inner}</span>
-                    </div>
-                </div>`;
-            }
-
-            return html;
-        }
-
-        // --- المودال ---
-
-        function openModal(id) {
-            const s = scientists.find(item => item.id === id);
+        // Shared Modal Content Generator
+        function createModalContent(s) {
+            // Reusing the modal logic but returning string
             const theme = getColors(s.color);
-            const modal = document.getElementById('detail-modal');
-            const content = document.getElementById('modal-content');
-
-            content.innerHTML = `
-                <!-- Modal Header -->
+            return `
                 <div class="relative bg-gradient-to-l from-gray-50 to-white p-6 md:p-8 border-b border-gray-200 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
                     <div class="flex-shrink-0 mx-auto md:mx-0">
                         <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg ring-2 ring-${s.color}-100">
@@ -961,10 +880,7 @@
                     </div>
                 </div>
 
-                <!-- Modal Body -->
                 <div class="p-6 md:p-8 space-y-10">
-                    
-                    <!-- Section 1: Principles & Experiment -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 relative overflow-hidden">
                             <div class="absolute top-0 right-0 w-2 h-full bg-${s.color}-500"></div>
@@ -975,7 +891,6 @@
                                 ${s.principles.map(p => `<li class="flex items-start gap-2 text-gray-700"><span class="mt-1.5 w-2 h-2 rounded-full bg-${s.color}-400 flex-shrink-0"></span><span>${p}</span></li>`).join('')}
                             </ul>
                         </div>
-
                         <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
                             <h4 class="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2 border-b border-gray-200 pb-2">
                                 <i class="fas fa-flask text-pink-500"></i> التجربة / الأساس العلمي
@@ -984,16 +899,13 @@
                         </div>
                     </div>
 
-                    <!-- Section 2: Visual Model -->
                     <div class="bg-slate-50 rounded-2xl p-6 md:p-8 border border-slate-200 text-center">
                         <h4 class="font-bold text-slate-800 text-xl mb-2 flex items-center justify-center gap-2">
                             <i class="fas fa-project-diagram text-slate-500"></i> النموذج التوضيحي
                         </h4>
-                        <p class="text-slate-500 text-sm mb-6">تبسيط مرئي للمفهوم الأساسي للنظرية</p>
                         ${renderModel(s)}
                     </div>
 
-                    <!-- Section 3: Training Impact Matrix -->
                     <div>
                         <h4 class="font-bold text-gray-800 text-xl mb-6 flex items-center gap-2">
                             <i class="fas fa-briefcase text-green-600"></i> مصفوفة الأثر في التدريب (Training Impact Matrix)
@@ -1018,7 +930,6 @@
                         </div>
                     </div>
 
-                    <!-- Section 4: General Applications -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-${s.color}-50 p-6 rounded-xl border border-${s.color}-100">
                         <div>
                             <h5 class="font-bold text-${s.color}-800 mb-3 flex items-center gap-2"><i class="fas fa-school"></i> في التعليم</h5>
@@ -1033,12 +944,130 @@
                             </ul>
                         </div>
                     </div>
-
                 </div>
             `;
-            
+        }
+
+        function renderCards(filter = 'all') {
+            const container = document.getElementById('cards-wrapper');
+            container.innerHTML = '';
+
+            const filtered = scientists.filter(s => filter === 'all' || s.category === filter);
+            filtered.sort((a, b) => a.year - b.year);
+
+            filtered.forEach(scientist => {
+                const theme = getColors(scientist.color);
+                
+                // Wrap in Anchor for PDF linking + OnClick for Screen Modal
+                const card = document.createElement('a');
+                card.href = `#detail-${scientist.id}`; // Internal link for PDF
+                card.className = `block card-container bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-2xl transition duration-300 page-break relative group cursor-pointer no-underline`;
+                
+                // For Screen: Prevent default anchor jump, open modal instead
+                card.onclick = (e) => {
+                    // Only prevent default if not printing (though click usually doesn't happen in print preview)
+                    // We check if it's a "screen" click
+                    if (window.matchMedia('print').matches) return; 
+                    e.preventDefault();
+                    openModal(scientist.id);
+                };
+
+                card.innerHTML = `
+                    <div class="absolute top-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition duration-300 no-print">
+                        <span class="bg-gray-800 text-white px-3 py-1 rounded-full text-xs shadow-lg">اضغط للتفاصيل</span>
+                    </div>
+                    
+                    <div class="relative bg-gray-50 p-6 flex flex-col md:flex-row items-center gap-6 border-b ${theme.border}">
+                        <div class="absolute top-0 left-8 bg-${scientist.color}-600 text-white text-xs font-bold px-4 py-1 rounded-b-lg shadow-sm school-badge">
+                            ${scientist.school}
+                        </div>
+                        <div class="relative">
+                            <div class="w-24 h-24 flex-shrink-0 bg-gray-200 rounded-full overflow-hidden border-4 border-white shadow-md scientist-img">
+                                <img src="https://placehold.co/150x150/${scientist.color === 'blue' ? '2563eb' : scientist.color === 'teal' ? '0d9488' : '9333ea'}/ffffff?text=${scientist.imgCode}" alt="${scientist.name}" class="w-full h-full object-cover">
+                            </div>
+                            <span class="absolute -bottom-2 right-1/2 transform translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-0.5 rounded-full font-mono border-2 border-white shadow-sm">${scientist.year}</span>
+                        </div>
+                        <div class="text-center md:text-right flex-1">
+                            <h2 class="text-2xl font-bold text-gray-800 group-hover:${theme.text} transition">${scientist.name}</h2>
+                            <p class="${theme.text} font-semibold mt-1 text-sm">${scientist.theory}</p>
+                            <p class="text-gray-500 text-xs mt-2 line-clamp-2 leading-relaxed max-w-lg">${scientist.desc_short}</p>
+                        </div>
+                        <div class="text-gray-300 group-hover:${theme.icon} transition no-print">
+                            <i class="fas fa-chevron-left text-2xl"></i>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --- دوال بناء النماذج البصرية (نفس الكود السابق) ---
+        function renderModel(s) {
+            let html = '';
+            if (s.modelType === 'pyramid') {
+                html = `<div class="flex flex-col items-center w-full max-w-md mx-auto my-6 space-y-1">`;
+                s.modelData.forEach((layer, index) => {
+                    const widthPercentage = 100 - (index * (80 / s.modelData.length)); 
+                    html += `<div class="${layer.color} text-white text-center py-2 px-4 rounded shadow-sm text-xs md:text-sm font-bold w-[${widthPercentage}%] transition hover:scale-105 cursor-default">${layer.level}</div>`;
+                });
+                html += `</div>`;
+            } else if (s.modelType === 'flow') {
+                html = `<div class="flex flex-col md:flex-row gap-4 justify-center items-stretch my-6">`;
+                s.modelData.forEach((step, index) => {
+                    html += `
+                        <div class="flex-1 bg-white border-2 border-dashed border-gray-300 p-4 rounded-xl text-center relative hover:border-indigo-500 transition group">
+                            <div class="text-indigo-600 font-bold mb-2">${step.step}</div>
+                            <div class="text-sm text-gray-600">${step.text}</div>
+                            ${index < s.modelData.length - 1 ? '<div class="hidden md:block absolute top-1/2 -left-3 transform -translate-y-1/2 text-gray-300"><i class="fas fa-arrow-left"></i></div>' : ''}
+                            ${index < s.modelData.length - 1 ? '<div class="md:hidden absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-gray-300"><i class="fas fa-arrow-down"></i></div>' : ''}
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            } else if (s.modelType === 'list') {
+                html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-6">`;
+                s.modelData.forEach(item => {
+                    html += `
+                        <div class="bg-gray-50 p-4 rounded-lg border-r-4 border-indigo-500 shadow-sm hover:bg-white hover:shadow-md transition">
+                            <h4 class="font-bold text-indigo-900 mb-2 text-sm border-b border-gray-200 pb-2">${item.title}</h4>
+                            <p class="text-gray-600 text-sm leading-relaxed">${item.content}</p>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            } else if (s.modelType === 'table') {
+                html = `<div class="overflow-x-auto my-6 rounded-lg border border-gray-200 shadow-sm"><table class="min-w-full divide-y divide-gray-200 text-sm">`;
+                html += `<thead class="bg-gray-100"><tr>
+                    <th class="px-4 py-3 text-right font-bold text-gray-700">${s.modelData[0].col1}</th>
+                    <th class="px-4 py-3 text-right font-bold text-gray-700">${s.modelData[0].col2}</th>
+                    <th class="px-4 py-3 text-right font-bold text-gray-700">${s.modelData[0].col3}</th>
+                </tr></thead><tbody class="divide-y divide-gray-200 bg-white">`;
+                s.modelData.slice(1).forEach(row => {
+                    html += `<tr class="hover:bg-gray-50 transition">
+                        <td class="px-4 py-3 font-semibold text-indigo-900">${row.col1}</td>
+                        <td class="px-4 py-3 text-gray-600">${row.col2}</td>
+                        <td class="px-4 py-3 text-green-700 bg-green-50">${row.col3}</td>
+                    </tr>`;
+                });
+                html += `</tbody></table></div>`;
+            } else if (s.modelType === 'zpd') {
+                html = `
+                <div class="relative w-64 h-64 mx-auto my-6 flex justify-center items-center text-xs font-bold text-center">
+                    <div class="absolute w-64 h-64 rounded-full bg-purple-100 border-2 border-purple-200 flex items-start justify-center pt-4 text-purple-400"><span class="w-3/4">${s.modelData.outer}</span></div>
+                    <div class="absolute w-44 h-44 rounded-full bg-purple-300 border-2 border-white flex items-start justify-center pt-6 text-purple-900 shadow-inner"><span class="w-3/4">${s.modelData.middle}</span></div>
+                    <div class="absolute w-24 h-24 rounded-full bg-purple-600 border-2 border-white flex items-center justify-center text-white shadow-lg z-10"><span>${s.modelData.inner}</span></div>
+                </div>`;
+            }
+            return html;
+        }
+
+        // --- المودال (للشاشة) ---
+        function openModal(id) {
+            const s = scientists.find(item => item.id === id);
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('modal-content');
+            content.innerHTML = createModalContent(s);
             modal.classList.remove('hidden');
-            // حركة بسيطة للظهور
             setTimeout(() => {
                 modal.querySelector('div[role="dialog"] > div').classList.add('modal-enter-active');
             }, 10);
@@ -1052,11 +1081,8 @@
             }, 200);
         }
 
-        // إغلاق المودال بزر ESC
         document.addEventListener('keydown', function(event) {
-            if (event.key === "Escape") {
-                closeModal();
-            }
+            if (event.key === "Escape") { closeModal(); }
         });
 
         function filterCards(type) {
@@ -1065,7 +1091,7 @@
 
         // Initial Render
         renderCards();
-
+        generatePrintDetails(); // توليد الصفحات الخفية للطباعة
     </script>
 </body>
 </html>
