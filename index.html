@@ -32,115 +32,128 @@
 
         /* --- تنسيقات الطباعة المتقدمة (PDF) --- */
         @media print {
-            /* إعدادات الصفحة */
+            /* إعدادات الصفحة: إزالة الهوامش تماماً لمنع كتابات المتصفح */
             @page {
                 size: A4;
-                margin: 1cm; /* هامش صغير لضمان عدم القص من الطابعة */
+                margin: 0mm; 
             }
             
             body {
                 background-color: white;
-                font-size: 12pt; /* حجم خط مناسب للقراءة */
+                font-size: 11pt; /* تصغير الخط قليلاً للاستيعاب */
+                margin: 0;
+                padding: 0;
+            }
+
+            /* حاوية الصفحة المطبوعة: نعطيها هوامش داخلية بدلاً من هوامش الصفحة */
+            .print-page-container {
+                padding: 15mm; /* هامش آمن للمحتوى */
+                width: 100%;
+                box-sizing: border-box;
+                page-break-after: always;
+                min-height: 100vh;
+                position: relative;
             }
 
             /* إخفاء عناصر التحكم */
             .no-print { display: none !important; }
             .print-only { display: block !important; }
 
-            /* --- إصلاح الفهرس (البطاقات الرئيسية) --- */
+            /* --- إصلاح الفهرس --- */
             #cards-wrapper {
                 display: grid !important;
-                grid-template-columns: repeat(3, 1fr) !important; /* 3 أعمدة في الصف */
-                gap: 1rem !important;
-                margin-bottom: 2rem !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 0.8rem !important;
+                margin: 0 !important;
+                page-break-after: always; /* فصل الفهرس عن التفاصيل */
             }
             
-            /* تصغير البطاقة في الفهرس */
             .card-container {
                 box-shadow: none !important;
-                border: 1px solid #ccc !important;
-                break-inside: avoid !important; /* ممنوع قص البطاقة */
-                page-break-inside: avoid !important;
+                border: 1px solid #ddd !important;
+                break-inside: avoid !important;
                 margin: 0 !important;
                 padding: 0.5rem !important;
-                min-height: auto !important;
+                background: white !important;
             }
             
             /* إخفاء التفاصيل غير الضرورية في الفهرس */
-            .card-container p, 
-            .card-container .school-badge {
-                display: none !important; /* إخفاء النص الطويل والشارة لتوفير المساحة */
-            }
+            .card-container p:not(.card-theory-title), 
+            .card-container .school-badge { display: none !important; }
+            
             .card-container h2 {
-                font-size: 1rem !important;
+                font-size: 0.9rem !important;
                 text-align: center !important;
-                margin-top: 0.5rem !important;
+                margin: 0.2rem 0 !important;
             }
             .card-container .scientist-img {
-                width: 60px !important;
-                height: 60px !important;
+                width: 50px !important;
+                height: 50px !important;
                 margin: 0 auto !important;
+                border-width: 2px !important;
             }
             .card-container .flex-col {
                 flex-direction: column !important;
                 align-items: center !important;
                 gap: 0 !important;
             }
-            .card-container .flex-1 {
-                text-align: center !important;
-            }
-            /* إظهار اسم النظرية بخط صغير */
+            .card-container .flex-1 { text-align: center !important; }
+            
             .card-theory-title {
                 display: block !important;
-                font-size: 0.8rem !important;
-                color: #666 !important;
+                font-size: 0.75rem !important;
+                color: #555 !important;
                 text-align: center !important;
+                font-weight: bold !important;
             }
 
-            /* --- إصلاح تداخل المحتوى في التفاصيل --- */
-            .page-break { 
-                page-break-before: always !important; 
-                margin-top: 0;
-                padding-top: 2rem !important;
-            }
-
-            /* القاعدة الذهبية: ممنوع القص داخل هذه العناصر */
+            /* --- إصلاح تداخل المحتوى --- */
+            /* قاعدة صارمة لمنع القص داخل المكونات */
             .print-no-split, 
-            table, 
-            tr, 
+            table, tr, td, th,
             .grid, 
             li,
-            .bg-slate-50, /* صناديق النماذج */
-            .bg-white.rounded-xl /* الصناديق الرئيسية */
+            .bg-slate-50,
+            .bg-white.rounded-xl,
+            .zpd-container /* حاوية فيجوتسكي */
             {
                 break-inside: avoid !important;
                 page-break-inside: avoid !important;
             }
             
             /* تحسين الجداول للطباعة */
-            table { width: 100% !important; border-collapse: collapse !important; }
-            th, td { border: 1px solid #ddd !important; padding: 8px !important; }
+            table { width: 100% !important; border-collapse: collapse !important; font-size: 0.9rem !important; }
+            th, td { border: 1px solid #ccc !important; padding: 6px !important; }
+            th { background-color: #f3f4f6 !important; color: #000 !important; }
             
             /* إخفاء المودال */
             #detail-modal { display: none !important; }
-
             a { text-decoration: none !important; color: inherit !important; }
+
+            /* تحسين الغلاف */
+            .cover-page {
+                height: 100vh !important;
+                width: 100vw !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+                background: linear-gradient(to bottom right, #1e3a8a, #1e40af) !important; /* لون ثابت للطباعة */
+                color: white !important;
+                page-break-after: always;
+            }
+            .cover-page * { color: white !important; }
+            .cover-page .text-blue-200 { color: #bfdbfe !important; }
         }
 
         /* فئات مساعدة */
         .print-only { display: none; }
-        .card-theory-title { display: none; } /* يظهر فقط في طباعة الفهرس */
+        .card-theory-title { display: none; }
 
-        .school-badge {
-            clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
-        }
-        
-        .scientist-img {
-            transition: transform 0.3s ease;
-        }
-        .card-container:hover .scientist-img {
-            transform: scale(1.05);
-        }
+        .school-badge { clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%); }
+        .scientist-img { transition: transform 0.3s ease; }
+        .card-container:hover .scientist-img { transform: scale(1.05); }
 
         /* تنسيقات النماذج البصرية */
         .pyramid-level {
@@ -176,19 +189,19 @@
     <div class="h-24 no-print"></div>
 
     <!-- صفحة الغلاف -->
-    <div class="cover-page flex flex-col items-center justify-center min-h-[90vh] bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-900 text-white text-center p-8 mb-12 relative overflow-hidden rounded-b-[3rem] shadow-2xl mx-4 mt-4 print:mx-0 print:rounded-none print:h-screen print:mb-0">
+    <div class="cover-page flex flex-col items-center justify-center min-h-[90vh] bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-900 text-white text-center p-8 mb-12 relative overflow-hidden rounded-b-[3rem] shadow-2xl mx-4 mt-4 print:rounded-none print:shadow-none">
         <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-        <div class="z-10 border-r-4 border-l-4 border-yellow-500/50 p-12 backdrop-blur-sm max-w-5xl w-full bg-white/5 rounded-2xl print:border-none">
-            <i class="fas fa-brain text-8xl mb-6 text-yellow-400 animate-pulse print:text-indigo-600 print:animate-none"></i>
-            <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-wide leading-tight">نظريات التعلم<br><span class="text-3xl md:text-5xl font-light text-blue-200 print:text-gray-300">وتطبيقاتها في التدريب</span></h1>
-            <div class="w-48 h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-8 print:bg-gray-400"></div>
-            <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">دليل شامل يستعرض تطور الفكر التربوي من الكلاسيكية إلى البنائية، مع نماذج تطبيقية لتعزيز كفاءة التدريب وتطوير الموارد البشرية.</p>
+        <div class="z-10 border-r-4 border-l-4 border-yellow-500/50 p-12 backdrop-blur-sm max-w-5xl w-full bg-white/5 rounded-2xl print:border-none print:bg-transparent">
+            <i class="fas fa-brain text-8xl mb-6 text-yellow-400 animate-pulse print:animate-none"></i>
+            <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-wide leading-tight">نظريات التعلم<br><span class="text-3xl md:text-5xl font-light text-blue-200">وتطبيقاتها في التدريب</span></h1>
+            <div class="w-48 h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mb-8 print:bg-yellow-400"></div>
+            <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed print:text-gray-100">دليل شامل يستعرض تطور الفكر التربوي من الكلاسيكية إلى البنائية، مع نماذج تطبيقية لتعزيز كفاءة التدريب وتطوير الموارد البشرية.</p>
             
-            <div class="flex flex-col items-center gap-2 text-blue-200 mt-8 border-t border-white/10 pt-8">
+            <div class="flex flex-col items-center gap-2 text-blue-200 mt-8 border-t border-white/10 pt-8 print:border-white/30">
                 <span class="text-xs uppercase tracking-[0.3em] opacity-70">إعداد وتطوير</span>
                 <h2 class="text-2xl font-bold text-white">محمد علي عسيري</h2>
                 <p class="text-base opacity-90">مدرب وكوتش محترف معتمد PCC بمعايير ICF</p>
-                <div class="flex items-center gap-2 mt-2 bg-white/10 px-4 py-1 rounded-full text-sm hover:bg-white/20 transition cursor-pointer print:text-gray-800 print:bg-white">
+                <div class="flex items-center gap-2 mt-2 bg-white/10 px-4 py-1 rounded-full text-sm hover:bg-white/20 transition cursor-pointer print:bg-white/20">
                     <i class="fa-brands fa-x-twitter"></i>
                     <span dir="ltr">@mohdasiri99</span>
                 </div>
@@ -196,23 +209,22 @@
         </div>
     </div>
 
-    <!-- عنوان الفهرس للطباعة فقط -->
-    <div class="print-only text-center py-10 page-break">
-        <h2 class="text-4xl font-bold text-gray-800 mb-4">فهرس النظريات</h2>
-        <p class="text-gray-500 mb-8">اضغط على اسم النظرية للانتقال مباشرة للتفاصيل</p>
+    <!-- الفهرس (للطباعة) -->
+    <div class="print-only print-page-container flex flex-col justify-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center">فهرس النظريات</h2>
+        <p class="text-gray-500 mb-6 text-center text-sm">اضغط على اسم النظرية للانتقال مباشرة للتفاصيل</p>
         
-        <!-- هنا سيتم نقل البطاقات لتصبح الفهرس -->
-        <div class="max-w-6xl mx-auto p-4 grid grid-cols-1 gap-8 mb-12" id="cards-wrapper">
+        <div class="grid grid-cols-1 gap-8 mb-12" id="cards-wrapper">
             <!-- سيتم ملء البطاقات هنا -->
         </div>
     </div>
 
-    <!-- حاوية التفاصيل للطباعة فقط (الصفحات الفرعية) -->
+    <!-- حاوية التفاصيل للطباعة فقط -->
     <div id="print-details-container" class="print-only">
-        <!-- سيتم توليد صفحات التفاصيل هنا تلقائياً -->
+        <!-- سيتم توليد صفحات التفاصيل هنا -->
     </div>
 
-    <!-- نافذة التفاصيل (Modal - للشاشة فقط) -->
+    <!-- نافذة التفاصيل (للشاشة) -->
     <div id="detail-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto no-print" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-900/90 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
@@ -229,7 +241,7 @@
     </div>
 
     <script>
-        // قاعدة البيانات (نفسها)
+        // بيانات العلماء
         const scientists = [
             // 1897 - Pavlov
             {
@@ -412,8 +424,8 @@
                 modelType: "zpd",
                 modelData: {
                     inner: "ما أستطيع فعله وحدي",
-                    middle: "منطقة النمو الوشيك (ZPD) - ما أفعله بمساعدة",
-                    outer: "ما لا أستطيع فعله حالياً"
+                    middle: "ZPD: ما أفعله بمساعدة",
+                    outer: "ما لا أستطيع فعله"
                 },
                 trainingMatrix: [
                     { focus: "الكوتشينج", app: "الكوتش يعمل في منطقة ZPD للمستفيد، يساعده لاكتشاف الحلول دون أن يقدمها جاهزة." },
@@ -886,7 +898,7 @@
                 const modalHtml = createModalContent(s);
                 const page = document.createElement('div');
                 // إضافة break-before: always لضمان بداية صفحة جديدة لكل نظرية
-                page.className = 'page-break min-h-screen relative p-8 bg-white border-t-2 border-gray-100';
+                page.className = 'print-page-container bg-white border-t-2 border-gray-100';
                 page.id = `detail-${s.id}`; // Anchor ID for linking
                 
                 // Add "Back to Index" link for PDF navigation
@@ -1099,10 +1111,10 @@
                 html += `</tbody></table></div>`;
             } else if (s.modelType === 'zpd') {
                 html = `
-                <div class="relative w-64 h-64 mx-auto my-6 flex justify-center items-center text-xs font-bold text-center print-no-split">
-                    <div class="absolute w-64 h-64 rounded-full bg-purple-100 border-2 border-purple-200 flex items-start justify-center pt-4 text-purple-400"><span class="w-3/4">${s.modelData.outer}</span></div>
-                    <div class="absolute w-44 h-44 rounded-full bg-purple-300 border-2 border-white flex items-start justify-center pt-6 text-purple-900 shadow-inner"><span class="w-3/4">${s.modelData.middle}</span></div>
-                    <div class="absolute w-24 h-24 rounded-full bg-purple-600 border-2 border-white flex items-center justify-center text-white shadow-lg z-10"><span>${s.modelData.inner}</span></div>
+                <div class="zpd-container relative w-64 h-64 mx-auto my-6 flex justify-center items-center text-xs font-bold text-center print-no-split">
+                    <div class="absolute w-64 h-64 rounded-full bg-purple-100 border-2 border-purple-200 flex items-start justify-center pt-2 text-purple-400"><span class="w-3/4 mt-2">${s.modelData.outer}</span></div>
+                    <div class="absolute w-44 h-44 rounded-full bg-purple-300 border-2 border-white flex items-start justify-center pt-4 text-purple-900 shadow-inner"><span class="w-3/4 mt-2">${s.modelData.middle}</span></div>
+                    <div class="absolute w-24 h-24 rounded-full bg-purple-600 border-2 border-white flex items-center justify-center text-white shadow-lg z-10"><span class="px-2">${s.modelData.inner}</span></div>
                 </div>`;
             }
             return html;
